@@ -3,18 +3,52 @@ export class Inventario {
         this.inventario = [];
     }
 
-    agregar(nuevoProducto) {
+agregar(nuevoProducto) {
+    const codigo = nuevoProducto.codigo;
+
+    if (this.inventario.length === 0) {
         this.inventario.push(nuevoProducto);
+        return; 
     }
 
-    buscar(codigo) {
-        for (let i = 0; i < this.inventario.length; i++) {
-            if (this.inventario[i].codigo === codigo) {
-                return this.inventario[i];
-            }
-        }
+    if (this.buscar(codigo) !== null) {
         return null;
     }
+
+    if (codigo > this.inventario[this.inventario.length - 1].codigo) {
+        this.inventario.push(nuevoProducto);
+    } else if (codigo < this.inventario[0].codigo) {
+        this.agregarInicio(nuevoProducto);
+    } else {
+        for (let i = 0; i < this.inventario.length; i++) {
+            if (this.inventario[i].codigo > codigo) {
+                this.insertar(nuevoProducto, i);
+                break;
+            }
+        }
+    }
+}
+
+buscar(codigo) {
+    let inicio = 0;
+    let fin = this.inventario.length - 1;
+
+    while (inicio <= fin) {
+        let medio = Math.floor((inicio + fin) / 2);
+        let productoActual = this.inventario[medio];
+
+        if (productoActual.codigo === codigo) {
+            return productoActual;
+        }
+        if (productoActual.codigo < codigo) {
+            inicio = medio + 1;
+        }
+        else {
+            fin = medio - 1;
+        }
+    }
+    return null;
+}
 
     eliminar(codigo) {
         for (let i = 0; i < this.inventario.length; i++) {
@@ -57,6 +91,13 @@ export class Inventario {
         const primerProducto = this.inventario[0];
         this.eliminar(primerProducto.codigo);
         return primerProducto;
+    }
+
+    extraerUltimo() {
+        if (this.inventario.length === 0) return null;
+        const ultimoProducto = this.inventario[this.inventario.length-1];
+        this.eliminar(ultimoProducto.codigo);
+        return ultimoProducto;
     }
 
     agregarInicio(nuevo) {
